@@ -22,10 +22,6 @@ body {
 .right {
     background-color: lightblue;}
 
-@media (max-width: 768px) {
-    .container {
-        grid-template-columns: 1fr;}}
-
 h1 {font-size: 24pt; color: slateblue}
 h1.center {text-align: center}
 h2 {font-size: 18pt; color: white}

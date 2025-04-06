@@ -31,3 +31,4 @@ h2 > a {color: rgb(120, 207, 184);}
 p {font-size: 14pt;}
 .left > p {color: blanchedalmond;}
 .right > p {color: blueviolet;}
+p.set {text-indent: 30px;}

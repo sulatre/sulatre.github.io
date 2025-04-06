@@ -2,7 +2,8 @@ body {
 	background-image: url(background.jpg);
 	background-repeat: repeat-y; /* repeat|no-repeat|repeat-x|repeat-y */
 	background-position: center center;
-    background-attachment: fixed;}
+    background-attachment: fixed;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;}
 
 .container {
     display: grid;

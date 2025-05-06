@@ -1,0 +1,78 @@
+body {
+	background-image: url(background.jpg);
+	background-repeat: repeat-y; /* repeat|no-repeat|repeat-x|repeat-y */
+	background-position: center center;
+    background-attachment: fixed;
+    font-family:
+    "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", sans-serif;
+}
+
+#container{
+    display: flex;
+    justify-content: center;
+}
+
+.center{text-align: center;}
+
+.lottery{
+    font-size: 5em;
+    width: 2.0em;
+    height: 2.0em;
+    align-content: center;
+    text-align: center;
+    border-radius: 200%;
+    margin: 0 0.2em;
+    color: darkred;
+}
+
+#lotto1{
+    background-image: url(mercury.jpg);
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+#lotto2{
+    background-image: url(venus.jpg);
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+#lotto3{
+    background-image: url(mars.jpg);
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+#lotto4{
+    background-image: url(jupiter.jpg);
+    background-position: 60% center;
+    background-attachment: fixed;
+}
+
+#lotto5{
+    background-image: url(saturn.jpg);
+    background-position: 81% center;
+    background-attachment: fixed;
+}
+
+#lotto6{
+    background-image: url(uranus.jpg);
+    background-position: 25% center;
+    background-attachment: fixed;
+}
+
+h1{
+    font-size: 6em;
+    color: gold;
+}
+
+a{
+    font-size: 5em;
+    border: 0.1em;
+    color: goldenrod;
+    background-color: silver;
+}
+
+a:hover{
+    background-color: gray;
+}

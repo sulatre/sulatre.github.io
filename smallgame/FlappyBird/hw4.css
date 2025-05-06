@@ -4,8 +4,10 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
+    background-image: url(../../homepage/background.jpg);
+    background-repeat: repeat-y; /* repeat|no-repeat|repeat-x|repeat-y */
+    background-position: center center;
+    background-attachment: fixed;
 }
 
 #game {
@@ -14,8 +16,7 @@ body {
 
 canvas {
     border: 1px solid #d3d3d3;
-    /*background-color: #f1f1f1;*/
-    background-image: url("sky.jpg");
+    background-image: url('sky.jpg');  /* 確保使用單引號或雙引號包圍路徑 */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;

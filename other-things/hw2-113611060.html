@@ -1,0 +1,38 @@
+<!--
+    Purpose: hw1-HomePage
+    Update date: 2025/04/22
+    Auther: Pitt Chen
+-->
+<script>
+class Shape {
+    constructor(name, sides, sideLength) {
+        this.name = name;
+        this.sides = sides;
+        this.sideLength = sideLength;
+    }
+
+    calcPerimeter(){
+        let L = this.side*this.sideLength;
+        return L;
+    }
+
+    calcArea(){
+        if(this.name == "Triangle"){
+            return (Math.sqrt(3)/4)*this.sideLength*this.sideLength;
+        }
+
+        if(this.name == "Square"){
+            return this.sideLength*this.sideLength;
+        }
+
+        return null;
+    }
+
+}
+
+let Triangle = new Shape("Triangle",3,5)
+let Square = new Shape("Square",4,10)
+
+console.log( "The perimeter of", Triangle.name ,"is : ", Triangle.calcPerimeter(), "the area of",Triangle.name,"is ", Triangle.calcArea());
+console.log( "The perimeter of", Square.name ,"is : ", Square.calcPerimeter(), "the area of",Square.name,"is ", Square.calcArea());
+</script>

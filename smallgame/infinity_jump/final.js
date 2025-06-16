@@ -296,7 +296,6 @@ function updateGameArea() {
             }
         }
         
-        
         myGamePiece.y = lowestPlatform.y - myGamePiece.height;
         myGamePiece.x = lowestPlatform.x + lowestPlatform.width / 2 - myGamePiece.width / 2;
         myGamePiece.gravitySpeed = 0;
@@ -419,6 +418,16 @@ function updateGameArea() {
     
     myScore.text = "層數: " + (currentLevel >= 0 ? currentLevel : 0);
     myScore.update();
+
+    // 1000層彩蛋
+    if (currentLevel === 1000|| currentLevel === 1001) {
+    var ctx = myGameArea.context;
+    ctx.fillStyle = "gold";
+    ctx.font = "30px Consolas";
+    ctx.textAlign = "center";
+    ctx.fillText("恭喜達到1000層！", myGameArea.canvas.width / 2, myGameArea.canvas.height / 2);
+    ctx.fillText("Congratulations！", myGameArea.canvas.width / 2, myGameArea.canvas.height / 2 + 40);
+}
     
     // 更新生命值
     updateLifeSquares();
@@ -501,13 +510,8 @@ function generatePlatformsAtHeight(y, isGround = false, updateLevel = true) {
             const randomColor = ["orange", "purple", "lime", "blue", "black", "white"];
             
             // 創建新平台機率
-            if(currentLevel === 1000){
-                ctx.fillStyle = "gold";
-                ctx.font = "30px Consolas";
-                ctx.fillText("恭喜你達到1000層!", myGameArea.canvas.width / 2, myGameArea.canvas.height / 2);
-            }
             if(currentLevel === 997){
-                platforms.push(new platform(myGameArea.canvas.width, 15, "gold", x, y));
+                platforms.push(new platform(myGameArea.canvas.width, 15, "gold", 0, y));
             }
             else if (currentLevel > 500) {
                 if( Math.random() < 0.2) {

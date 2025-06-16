@@ -8,7 +8,7 @@ var gameStarted = false;
 var gameAreaOffset = 0;
 var lastPlatformY = 0;
 var currentLevel = 0;
-var maxLives = 3;
+var maxLives = 10;
 var playerLives = maxLives;
 var lifeSquares = [];
 var isEnd = false;
@@ -16,10 +16,10 @@ var fixedWidth = 120;
 var fixedVerticalGap = 180;
 var range = 0.4;
 var amount = 2;
-var brokenRate = 0.1; 
+var Rate = 0.1; 
 var stickyRate = 0.1;
-var stickyJumpRate = 0.825;
-var jumpHeight = 2;
+var stickyJumpRate = 0.85;
+var jumpHeight = 12;
 
 // 初始化遊戲環境
 function initGame() {
@@ -56,7 +56,7 @@ function renderStartScreen(){
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.fillText("點擊開始遊戲", 
-                myGameArea.canvas.width/2, 
+                myGameArea.canvas.width/2,  
                 myGameArea.canvas.height/2 + 7);    
 
     // 指導按鈕
@@ -96,14 +96,16 @@ var myGameArea = {
         }; 
 
         window.addEventListener('keydown', (e) => {
-            if (gameStarted && (e.key === ' ' || e.key === 'ArrowUp' ||
-                e.key === 'w' || e.key === 'W') && (this.playerOnPlatform || 
-                myGamePiece.y === myGameArea.canvas.height - myGamePiece.height)) {
-                if(myGamePiece.isSticky) {
-                    myGamePiece.jump(stickyJumpRate*jumpHeight);
-                    myGamePiece.isSticky = false; // 跳躍後取消黏性
+            for(let i = 0; i < platforms.length; i++){
+                this.playerOnPlatform = false;
+                if (myGamePiece.isOnPlatform(platforms[i])) {
+                    this.playerOnPlatform = true;
+                    break;
                 }
-                else {myGamePiece.jump(jumpHeight);}
+            }
+            if (gameStarted && (e.key === ' ' || e.key === 'ArrowUp' ||
+                e.key === 'w' || e.key === 'W') && this.playerOnPlatform && myGamePiece.speedY === 0) {
+                myGamePiece.jump();
                 this.playerOnPlatform = false;
             }
             if (gameStarted && this.keys.hasOwnProperty(e.key)) {
@@ -211,10 +213,10 @@ function handleClick(event) {
             alert("遊戲說明：\n\n" +
             "1. 使用左/右鍵或A/D鍵控制玩家移動。\n" +
             "2. 使用空格鍵/上鍵/W鍵跳躍。\n" +
-            "3. 目標是努力向上跳，避免掉出畫面外。\n" +
+            "3. 目標是努力向上跳，避免掉下去。\n" +
             "4. 每次掉落會減少一條生命，生命值歸零時遊戲結束。\n" +
             "5. 每上升一層計算為一分，下落不扣分，遊戲結束時顯示得分。\n" +
-            "6. 遊戲仍為demo版本。\n");
+            "6. 不同顏色的平台有不同效果。\n");
         }
     }
 }
@@ -259,12 +261,12 @@ function updateGameArea() {
     myGameArea.frameNo += 1;
     
     // 處理按鍵
-    myGamePiece.speedX = 0;
+    myGamePiece.speedX = - myGamePiece.tendleft * 5 + myGamePiece.tendright * 5;
     if (myGameArea.keys.ArrowLeft || myGameArea.keys.a || myGameArea.keys.A) {
-        myGamePiece.speedX = -5;
+        myGamePiece.speedX = -5 - myGamePiece.tendleft * 5 + myGamePiece.tendright * 5;
     }
     if (myGameArea.keys.ArrowRight || myGameArea.keys.d || myGameArea.keys.D) {
-        myGamePiece.speedX = 5;
+        myGamePiece.speedX = 5 - myGamePiece.tendleft * 5 + myGamePiece.tendright * 5;
     }
     
     // 掉出畫面
@@ -352,7 +354,7 @@ function updateGameArea() {
                 // 檢查是否是藍色平台
                 if (platforms[i].color === "blue" && !platforms[i].isBroken) {
                     platforms[i].isBroken = true;
-                    platforms[i].color = "darkblue"; // 視覺提示
+                    platforms[i].color = "darkblue";
                     
                     // 記錄要刪除的平台
                     const platformToRemove = platforms[i];
@@ -368,9 +370,36 @@ function updateGameArea() {
 
                 // 檢查是否是綠色平台
                 if (platforms[i].color === "lime") {
-                    myGamePiece.isSticky = true;
+                    myGamePiece.jumpHeight = jumpHeight * stickyJumpRate;
+                }
+                // 非黏性平台，恢復正常跳躍高度
+                else {
+                
+                    myGamePiece.jumpHeight = jumpHeight;
+                }
+
+                // 檢查是否是紫色平台
+                if (platforms[i].color === "purple") {
+                    myGamePiece.isDark = true;
+                }
+                else{
+                    myGamePiece.isDark = false;
                 }
                 
+                // 檢查是否是黑色平台
+                if(platforms[i].color === "black") {
+                    myGamePiece.tendleft = true;
+                    setTimeout(() => {myGamePiece.tendleft = false;},500);
+                }
+                
+
+                //檢查是否是白色平台
+                if(platforms[i].color === "white") {
+                    myGamePiece.tendright = true;
+                    setTimeout(() => {myGamePiece.tendright = false;},500);
+                }
+                
+
                 break;
             }
         }
@@ -469,13 +498,51 @@ function generatePlatformsAtHeight(y, isGround = false, updateLevel = true) {
             const maxOffset = sectionWidth * range;
             const randomOffset = (Math.random() * maxOffset * 2) - maxOffset;
             const x = sectionCenter - (fixedWidth / 2) + randomOffset;
-
+            const randomColor = ["orange", "purple", "lime", "blue", "black", "white"];
+            
             // 創建新平台機率
-            if( currentLevel > 110 && Math.random() - Math.floor(Math.random()) < brokenRate * ((currentLevel - 100) / 10)) {
+            if(currentLevel === 1000){
+                ctx.fillStyle = "gold";
+                ctx.font = "30px Consolas";
+                ctx.fillText("恭喜你達到1000層!", myGameArea.canvas.width / 2, myGameArea.canvas.height / 2);
+            }
+            if(currentLevel === 997){
+                platforms.push(new platform(myGameArea.canvas.width, 15, "gold", x, y));
+            }
+            else if (currentLevel > 500) {
+                if( Math.random() < 0.2) {
+                    platforms.push(new platform(fixedWidth, 15, "blue", x, y));
+                }
+                else if( Math.random() < 0.4) {
+                    platforms.push(new platform(fixedWidth, 15, "lime", x, y));
+                }
+                else if( Math.random() < 0.6) {
+                    platforms.push(new platform(fixedWidth, 15, "purple", x, y));
+                }
+                else if( Math.random() < 0.8) {
+                    platforms.push(new platform(fixedWidth, 15, "white", x, y));
+                }
+                else if( Math.random() < 1) {
+                    platforms.push(new platform(fixedWidth, 15, "black", x, y));
+                }
+                else {
+                    platforms.push(new platform(fixedWidth, 15, "orange", x, y));
+                }
+            }
+            else if( currentLevel > 400 && Math.random() < Rate * ((currentLevel - 400) / 10)) {
+                platforms.push(new platform(fixedWidth, 15, "blue", x, y));
+            }
+            else if( currentLevel > 300 && Math.random() < Rate * ((currentLevel - 300) / 10)) {
                 platforms.push(new platform(fixedWidth, 15, "lime", x, y));
             }
-            else if( currentLevel > 10 && Math.random() - Math.floor(Math.random()) < brokenRate * (currentLevel / 10)) {
-                platforms.push(new platform(fixedWidth, 15, "blue", x, y));
+            else if( currentLevel > 200 && Math.random() < Rate * ((currentLevel - 200) / 10)) {
+                platforms.push(new platform(fixedWidth, 15, "purple", x, y));
+            }
+            else if( currentLevel > 100 && Math.random() < Rate * ((currentLevel - 100) / 10)) {
+                platforms.push(new platform(fixedWidth, 15, "white", x, y));
+            }
+            else if( currentLevel > 10 && Math.random() < Rate * (currentLevel / 10)) {
+                platforms.push(new platform(fixedWidth, 15, "black", x, y));
             }
             else {
                 platforms.push(new platform(fixedWidth, 15, "orange", x, y));
@@ -552,11 +619,15 @@ class block extends Component {
         super(30, 30, "red", defaultX, defaultY, "image");
         this.gravity = 0.2;
         this.image = null;
-        this.jumpHeight = 6;
+        this.jumpHeight = 12;
         this.highlightEffect = 0;
         this.isHighlighted = false;
-        this.speedX = 0;
+        this.isDark = false;
+        this.tendleft = false;
+        this.tendright = false;
+        this.speedX = - this.tendleft * 5 + this.tendright * 5;
         this.speedY = 0;
+        
         if (imageSrc) {
             this.image = new Image();
             this.image.src = imageSrc;
@@ -588,8 +659,8 @@ class block extends Component {
     }
 
     // 上躍
-    jump(height) {
-        this.gravitySpeed = -this.jumpHeight * height;
+    jump() {
+        this.gravitySpeed = -this.jumpHeight;
     }
 
     // 下墜
@@ -611,10 +682,11 @@ class block extends Component {
         }
     }
 
-    // 閃爍高亮
+    // 閃光&致盲
     update() {
         const ctx = myGameArea.context;
         
+        //閃光
         if (this.isHighlighted) {
             this.highlightEffect += 0.1;
             if (this.highlightEffect > Math.PI * 2) {
@@ -653,6 +725,13 @@ class block extends Component {
                 ctx.fill();
             }
         }
+
+        //致盲
+        if(this.isDark) {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+            ctx.fillRect(0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
+        }
+
         super.update();
     }
     
@@ -697,7 +776,6 @@ class platform extends Component {
         this.color = color;
         this.type = "platform";
         this.isBroken = false;
-        this.isSticky = false; 
     }
 
     // 更新平台狀態

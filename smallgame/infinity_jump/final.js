@@ -55,7 +55,7 @@ function renderStartScreen(){
     ctx.font = "20px Consolas";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
-    ctx.fillText("點擊開始遊戲", 
+    ctx.fillText("開始遊戲", 
                 myGameArea.canvas.width/2,  
                 myGameArea.canvas.height/2 + 7);    
 
